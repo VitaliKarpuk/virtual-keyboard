@@ -146,6 +146,18 @@ class Keyboard {
             }
         });
    }
+   changeLang() {
+    if(+localStorage.getItem('lang') === 1){
+        localStorage.setItem('lang', 0);
+        this.properties.isRrussian = localStorage.getItem('lang');
+    }else{
+        localStorage.setItem('lang', 1)
+        this.properties.isRrussian = localStorage.getItem('lang')
+    }
+    document.querySelector('.keyboard').remove();
+    this.initVertual();
+
+    }
    initReal() {
     document.addEventListener('keydown', (event) => {
         event.preventDefault()

@@ -146,10 +146,115 @@ class Keyboard {
             }
         });
    }
+   initReal() {
+    document.addEventListener('keydown', (event) => {
+        event.preventDefault()
+      // Use date attribute
+      const key = document.querySelector(`button[data-key='${event.code}']`);
+      switch (event.code) {
+        case 'Backspace':
+          this.properties.value = document.querySelector('.use-keyboard-input').value;
+          this.properties.value = this.properties.value
+            .slice(0, this.properties.value.length - 1);
+          document.querySelector('.use-keyboard-input').value = this.properties.value;
+          break;
+
+        case 'Tab':
+          document.querySelector('.use-keyboard-input').value += '\t';
+          break;
+
+        case 'CapsLock':
+          key.classList.add('keyboard__key_activeted');
+          this.toggleCapsLock();
+          break; 
+
+        case 'Enter':
+          document.querySelector('.use-keyboard-input').value += '\n';
+          break;
+
+        case 'ShiftLeft':
+          key.classList.add('keyboard__key_activeted');
+          break;
+
+        case 'ControlLeft':
+        case 'ControlRight':
+        case 'AltLeft':
+        case 'AltRight':
+          break;
+
+        case 'Space':
+          document.querySelector('.use-keyboard-input').value += ' ';
+          break;
+
+        default:
+          this.keyLayout.forEach((item) => {
+            if (item[2] === event.code) {
+              // english
+              if (!this.properties.isRrussian) {
+                if (!this.properties.capsLock) {
+                  document.querySelector('.use-keyboard-input').value += item[0].toLowerCase();
+                }
+                if (this.properties.capsLock) {
+                  document.querySelector('.use-keyboard-input').value += item[0].toUpperCase();
+                }
+                // russian
+              } else {
+                if (!this.properties.capsLock) {
+                  document.querySelector('.use-keyboard-input').value += item[1].toLowerCase();
+                }
+                if (this.properties.capsLock) {
+                  document.querySelector('.use-keyboard-input').value += item[1].toUpperCase();
+                }
+              }
+            }
+          });
+      }
+      key.classList.add('keyboard__key_activeted');
+      console.clear();//!====================================
+    });
+
+    document.addEventListener("keyup", (event) => {
+      const key = document.querySelector(`button[data-key='${event.code}']`);
+      // if (event.code === 'ShiftLeft') {
+      //   this.toggleCapsLock();
+      // }
+      key.classList.remove('keyboard__key_activeted');
+    });
+    function runOnKeys(func, ...codes) {
+      const pressed = new Set();
+      
+      document.addEventListener('keydown', (event) => {
+        pressed.add(event.code);
+        // Are all keys from the set pressed?
+        for (let i = 0; i < codes.length; i += 1) {
+          if (!pressed.has(codes[i])) {
+            return pressed;
+          }
+        }
+        pressed.clear();
+        func();
+      });
+
+      document.addEventListener('keyup', (event) => {
+        pressed.delete(event.code);
+      });
+    }
+
+    runOnKeys(
+      () => {
+        setTimeout(() => {
+          this.changeLang();
+        }, 100);
+      },
+      'ShiftLeft',
+      'AltLeft',
+    );
+  }
 }
 window.addEventListener("DOMContentLoaded", function() {
     const keyboard = new Keyboard()
     keyboard.initTextArea();
     keyboard.initVertual();
     keyboard.createKeys();
+    keyboard.initReal();
 });
